@@ -1,4 +1,5 @@
 #include <GL/glu.h>
+#include <windows.h>
 #include <tchar.h>
 #include <GL/gl.h>
 #include<iostream>
@@ -6,18 +7,29 @@
 #include<cstring>
 using namespace std;
 
+
+LRESULT  CALLBACK WndProc(HWND hwnd, UINT msg1, WPARAM wParam, LPARAM lParam){
+    switch (msg1)
+    {
+    case WM_CLOSE:
+        PostQuitMessage(69);
+        break;
+    }
+    
+    return DefWindowProc(hwnd,msg1,wParam,lParam);
+}
+
 int CALLBACK  WinMain( 
     HINSTANCE hInstance, 
     HINSTANCE hPrevInstance, 
     LPSTR lPCmdline, 
     int nCmdShow){
-        cout<<"Hello World";
-        const auto winClassName= _T("s_win");
+        const auto winClassName= "s_win";
         //todo to create window you need to register window class
         WNDCLASSEX winclass = {0};
         winclass.cbSize=sizeof(winclass);
         winclass.style=CS_OWNDC;
-        winclass.lpfnWndProc=DefWindowProc;
+        winclass.lpfnWndProc=WndProc;
         winclass.cbWndExtra=0;
         winclass.cbClsExtra=0;
         winclass.hInstance=hInstance;
@@ -31,16 +43,26 @@ int CALLBACK  WinMain(
         RegisterClassEx(&winclass);
         //* creating a window
         HWND firstWin=CreateWindowEx(
-        0,
+        0,  
         winClassName,
-        _T("ButtonBoo"),
+        "ButtonBoo",
         WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
-        500,500,
+        200,200,
         1280,720,//size of the window
         nullptr,nullptr
         ,hInstance,nullptr
         );
         ShowWindow(firstWin,SW_SHOW);
-        
-        return 0;
+        MSG msg1;
+        bool getmessage_reply;
+        while(getmessage_reply=GetMessage(&msg1,nullptr,0,0)>0)
+        {
+            TranslateMessage(&msg1);
+            DispatchMessage(&msg1);
+        }
+        if(getmessage_reply==-1){
+            return -1
+        }else{
+            return msg1.wParam;
+        }
     }
