@@ -11,11 +11,35 @@ using namespace std;
 LRESULT  CALLBACK WndProc(HWND hwnd, UINT msg1, WPARAM wParam, LPARAM lParam){
     switch (msg1)
     {
-    case WM_CLOSE:
-        PostQuitMessage(69);
-        break;
+        case WM_CLOSE:
+            PostQuitMessage(69);
+            break;
+        //: keydown recognises all keys, WM_CHAR only recognises charactors
+        //: however WM_CHAR is case sensitive, KEYDOWN is not.
+        
+        case WM_CHAR:
+        {
+            string title;
+            title.push_back((char)wParam);
+            SetWindowText(hwnd,title.c_str());
+            break;
+        }
+        case WM_KEYDOWN:
+            if(wParam=='M'){
+                
+            }
+            if(wParam==VK_ESCAPE){
+                PostQuitMessage(420);
+                break;
+            }
+            break;
+        case WM_KEYUP:
+        //you didnt see that
+            if(wParam=='M'){
+                SetWindowText(hwnd,"huh?");
+            }
+            break;
     }
-    
     return DefWindowProc(hwnd,msg1,wParam,lParam);
 }
 
@@ -57,12 +81,14 @@ int CALLBACK  WinMain(
         bool getmessage_reply;
         while(getmessage_reply=GetMessage(&msg1,nullptr,0,0)>0)
         {
+            //:translate message - convert keys to WM_CHAR
             TranslateMessage(&msg1);
             DispatchMessage(&msg1);
         }
         if(getmessage_reply==-1){
-            return -1
-        }else{
+            return -1;
+        }
+        else{
             return msg1.wParam;
         }
     }
